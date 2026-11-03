@@ -3,7 +3,6 @@ import random
 
 st.title("🎅 Secret Santa Draw 🎅")
 
-# Permanently set participants, stores, and budgets
 NAMES = [
     "Frame", "Paps", "Deej", "Ling", 
     "Himes", "Fik", "K mess", "Duck", "Cheese"
@@ -16,12 +15,23 @@ STORES = [
 
 BUDGETS = [15, 30, 50, 75, 100, 150, 200, 300, 400]
 
-# Fix the seed so the shuffle result is locked permanently across all users/devices
+# Hardcoded secret PINs matching your master list
+USER_PINS = {
+    "Frame": "4812",
+    "Paps": "7391",
+    "Deej": "2564",
+    "Ling": "9148",
+    "Himes": "3625",
+    "Fik": "8053",
+    "K mess": "1794",
+    "Duck": "6240",
+    "Cheese": "5389"
+}
+
 @st.cache_data
 def generate_secret_draw():
-    rng = random.Random(42)  # Shared seed for consistent results
+    rng = random.Random(42)  # Locked seed so matchups never change
     
-    # Shuffle targets ensuring no self-picks
     targets = NAMES.copy()
     valid = False
     while not valid:
@@ -40,13 +50,16 @@ def generate_secret_draw():
 
 draws = generate_secret_draw()
 
-st.write("### Choose your name to reveal your assignment:")
-user_select = st.selectbox(
-    "Select your name:", 
-    ["-- Select Name --"] + NAMES
-)
+st.write("### Private Assignment Lookup")
+user_select = st.selectbox("Select your name:", ["-- Select Name --"] + NAMES)
 
 if user_select != "-- Select Name --":
-    target, store, budget = draws[user_select]
-    st.success(f"🔒 Assignment for **{user_select}** locked in!")
-    st.info(f"🎯 **Buying For:** {target}\n\n🏪 **Store:** {store}\n\n💰 **Budget:** ${budget}")
+    pin_input = st.text_input(f"Enter 4-digit PIN for {user_select}:", type="password")
+    
+    if pin_input:
+        if pin_input == USER_PINS[user_select]:
+            target, store, budget = draws[user_select]
+            st.success(f"🔒 Authenticated for **{user_select}**")
+            st.info(f"🎯 **Buying For:** {target}\n\n🏪 **Store:** {store}\n\n💰 **Budget:** ${budget}")
+        else:
+            st.error("❌ Incorrect PIN. Access denied.")
