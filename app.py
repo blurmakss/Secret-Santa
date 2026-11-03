@@ -43,6 +43,3 @@ if 'draws' in st.session_state:
     st.write("---")
     user_select = st.selectbox("Select your name to reveal your secret assignment:", ["-- Select Name --"] + list(st.session_state['draws'].keys()))
     
-    if user_select != "-- Select Name --":
-        target, store, budget = st.session_state['draws'][user_select]
-        st.info(f"🎯 **Buying For:** {target}\n\n🏪 **Store:** {store}\n\n💰 **Budget:** ${budget}")
